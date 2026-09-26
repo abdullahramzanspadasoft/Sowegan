@@ -6,6 +6,7 @@ import { Bell, Menu, Search } from "lucide-react";
 import { authClient } from "@/lib/auth";
 import type { AuthUser } from "@/lib/auth";
 import { ThemeToggle } from "@/components/layout/ThemeToggle";
+import { LanguageSwitcher } from "@/components/layout/LanguageSwitcher";
 
 export function DashboardHeader({
   title,
@@ -72,6 +73,9 @@ export function DashboardHeader({
             />
           </form>
           <ThemeToggle />
+          <div className="hidden sm:block">
+            <LanguageSwitcher />
+          </div>
           <button
             className="relative rounded-xl border border-border p-2.5 text-muted hover:bg-surface-muted"
             aria-label="Notifications"

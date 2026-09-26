@@ -261,4 +261,92 @@ export const messages: Record<LocaleCode, Messages> = {
       rights: "모든 권리 보유.",
     },
   },
+  sw: {
+    nav: {
+      markets: "Masoko",
+      platform: "Jukwaa",
+      about: "Kuhusu",
+      contact: "Wasiliana",
+      login: "Ingia",
+      signUp: "Jisajili",
+      tradeNow: "Fanya Biashara Sasa",
+      language: "Lugha",
+      comingSoon: "Inakuja hivi karibuni",
+    },
+    hero: {
+      badge: "Nafasi ya biashara ya mali nyingi",
+      title: "Fanya biashara katika masoko ya dunia kwa uwazi wa kitaalamu.",
+      subtitle:
+        "Sowegan inaleta forex, crypto, bidhaa, na fahirisi katika jukwaa moja la kitaalamu. Soma bei, simamia kitabu chako, na fanya kazi katika nafasi iliyojengwa kwa umakini.",
+      createAccount: "Fungua akaunti",
+      login: "Ingia",
+      instruments: "Vyombo",
+      markets: "Masoko",
+      coverage: "Ufunikaji",
+    },
+    features: {
+      eyebrow: "Jukwaa",
+      title: "Imejengwa kama dawati la biashara, si brosha.",
+      subtitle:
+        "Sowegan imeundwa kuzunguka taarifa wanazotumia wafanyabiashara: bei, mienendo, hatari, na nafasi ya kazi isiyoingilia.",
+    },
+    benefits: {
+      eyebrow: "Kwa nini Sowegan",
+      title: "Mwonekano wa soko wa hali ya juu bila kelele za kuona.",
+      subtitle:
+        "Bidhaa nyingi za biashara huzidisha au kurahisisha mno. Sowegan inashikilia katikati: yenye kina kwa wataalamu, na yenye nafasi ya kusomeka kwenye kila skrini.",
+    },
+    instruments: {
+      eyebrow: "Vyombo",
+      title: "Masoko manne. Bodi moja thabiti.",
+      subtitle: "Fuatilia nukuu za forex, crypto, bidhaa, na fahirisi mahali pamoja.",
+    },
+    howItWorks: {
+      eyebrow: "Jinsi inavyofanya kazi",
+      title: "Kutoka akaunti hadi dawati kwa hatua tatu.",
+      subtitle: "Njia rahisi kuelekea nafasi ya biashara ya kitaalamu.",
+    },
+    stats: {
+      eyebrow: "Kwa mtazamo",
+      title: "Imejengwa kwa ufunikaji mkubwa wa soko.",
+    },
+    testimonials: {
+      eyebrow: "Maoni",
+      title: "Wafanyabiashara wanasema nini kuhusu Sowegan.",
+      subtitle: "Maoni kutoka kwa watu wanaojali uwazi, mpangilio, na umakini wa soko.",
+    },
+    faq: {
+      eyebrow: "Maswali",
+      title: "Majibu kabla ya kufungua akaunti.",
+      subtitle: "Maswali ya kawaida kuhusu masoko, akaunti, na uzoefu wa Sowegan.",
+    },
+    finalCta: {
+      title: "Fungua nafasi yako ya Sowegan.",
+      subtitle:
+        "Fungua akaunti, angalia masoko, na ingia kwenye dashibodi iliyoundwa kwa biashara ya kitaalamu.",
+      getStarted: "Anza sasa",
+      login: "Ingia",
+    },
+    footer: {
+      blurb:
+        "Sowegan ni nafasi ya biashara ya mali nyingi kwa forex, crypto, bidhaa, na fahirisi. Imejengwa kwa uwazi, kasi, na uwasilishaji wa kiwango cha kitaalamu.",
+      platform: "Jukwaa",
+      company: "Kampuni",
+      account: "Akaunti",
+      legal: "Kisheria",
+      markets: "Masoko",
+      dashboard: "Dashibodi",
+      features: "Vipengele",
+      howItWorks: "Jinsi inavyofanya kazi",
+      about: "Kuhusu",
+      contact: "Wasiliana",
+      faq: "Maswali",
+      login: "Ingia",
+      register: "Jisajili",
+      resetPassword: "Weka upya nenosiri",
+      terms: "Sheria",
+      privacy: "Faragha",
+      rights: "Haki zote zimehifadhiwa.",
+    },
+  },
 };

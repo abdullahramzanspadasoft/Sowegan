@@ -10,7 +10,7 @@ import { PasswordInput } from "@/components/ui/PasswordInput";
 import { Button } from "@/components/ui/Button";
 import { Alert } from "@/components/ui/Alert";
 import { isValidEmail } from "@/lib/utils";
-import { authClient, DEMO_EMAIL, DEMO_PASSWORD } from "@/lib/auth";
+import { authClient } from "@/lib/auth";
 import { AppleIcon, GoogleIcon } from "@/components/icons/BrandIcons";
 import { getRegion, getRegionLabel, getRegionOption } from "@/lib/preferences";
 import { Flag } from "@/components/ui/Flag";
@@ -41,7 +41,9 @@ export default function LoginPage() {
   function validate(nextEmail: string, nextPassword: string) {
     const next: Record<string, string> = {};
     if (!isValidEmail(nextEmail)) next.email = "Enter a valid email address.";
-    if (!nextPassword) next.password = "Enter your password.";
+    if (!nextPassword || nextPassword.length < 4) {
+      next.password = "Enter a password (min 4 characters).";
+    }
     setErrors(next);
     return Object.keys(next).length === 0;
   }
@@ -50,7 +52,6 @@ export default function LoginPage() {
     event.preventDefault();
     setAuthError("");
 
-    // Read from the form so browser autofill values are included
     const formData = new FormData(event.currentTarget);
     const nextEmail = String(formData.get("email") ?? email).trim();
     const nextPassword = String(formData.get("password") ?? password);
@@ -78,14 +79,6 @@ export default function LoginPage() {
     router.push("/start-trading");
   }
 
-  function useDemoAccount() {
-    setEmail(DEMO_EMAIL);
-    setPassword(DEMO_PASSWORD);
-    setAuthError("");
-    setErrors({});
-    setStatus("idle");
-  }
-
   if (!ready) {
     return (
       <AuthShell title="Welcome back" subtitle="Checking your region selection...">
@@ -97,7 +90,7 @@ export default function LoginPage() {
   return (
     <AuthShell
       title="Welcome back"
-      subtitle="Log in to your Sowegan workspace to review markets, balances, and account activity."
+      subtitle="Log in with any email and password to open your Sowegan workspace."
     >
       <form className="space-y-5" onSubmit={onSubmit} noValidate>
         {regionLabel && regionCode && (
@@ -123,7 +116,7 @@ export default function LoginPage() {
         )}
         {status === "info" && (
           <Alert tone="info" title="Social login is a UI preview">
-            Use the demo email and password to enter the Sowegan dashboard.
+            Use email and password below to enter the dashboard.
           </Alert>
         )}
         <Input
@@ -133,7 +126,7 @@ export default function LoginPage() {
           value={email}
           onChange={(event) => setEmail(event.target.value)}
           error={errors.email}
-          placeholder="Sowegan123@gmail.com"
+          placeholder="you@email.com"
           leftIcon={<Mail size={16} />}
           autoComplete="username"
         />
@@ -170,24 +163,6 @@ export default function LoginPage() {
             <AppleIcon className="h-[18px] w-[18px] shrink-0" />
             Continue with Apple
           </Button>
-        </div>
-        <div className="rounded-xl border border-border bg-surface-muted px-4 py-3 text-sm">
-          <div className="flex items-center justify-between gap-3">
-            <p className="font-semibold text-text">Demo account</p>
-            <button
-              type="button"
-              onClick={useDemoAccount}
-              className="text-xs font-semibold text-accent hover:text-accent-hover"
-            >
-              Use demo
-            </button>
-          </div>
-          <p className="mt-1 text-muted">
-            Email: <span className="font-medium text-text">{DEMO_EMAIL}</span>
-          </p>
-          <p className="text-muted">
-            Password: <span className="font-medium text-text">{DEMO_PASSWORD}</span>
-          </p>
         </div>
         <p className="text-center text-sm text-muted">
           New to Sowegan?{" "}

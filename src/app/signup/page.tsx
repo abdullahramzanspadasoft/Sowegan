@@ -10,6 +10,7 @@ import { PasswordStrength } from "@/components/ui/PasswordStrength";
 import { Button } from "@/components/ui/Button";
 import { Alert } from "@/components/ui/Alert";
 import { isValidEmail } from "@/lib/utils";
+import { authClient } from "@/lib/auth";
 import { getRegion, getRegionLabel, getRegionOption } from "@/lib/preferences";
 import { Flag } from "@/components/ui/Flag";
 
@@ -57,9 +58,18 @@ export default function SignupPage() {
       return;
     }
     setStatus("loading");
-    await new Promise((resolve) => setTimeout(resolve, 800));
+    const result = await authClient.register({
+      name: form.name.trim(),
+      email: form.email.trim(),
+      password: form.password,
+    });
+    if (!result.ok) {
+      setErrors({ email: result.error });
+      setStatus("error");
+      return;
+    }
     setStatus("success");
-    router.push("/login");
+    router.push("/start-trading");
   }
 
   if (!ready) {
@@ -94,7 +104,7 @@ export default function SignupPage() {
         )}
         {status === "success" && (
           <Alert tone="success" title="Account created">
-            Taking you to login. Use the demo account to continue.
+            Signing you in to your Sowegan workspace…
           </Alert>
         )}
         <Input

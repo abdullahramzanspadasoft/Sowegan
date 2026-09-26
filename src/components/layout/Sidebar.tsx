@@ -15,6 +15,7 @@ import {
 } from "lucide-react";
 import { Logo } from "@/components/ui/Logo";
 import { ThemeToggle } from "@/components/layout/ThemeToggle";
+import { LanguageSwitcher } from "@/components/layout/LanguageSwitcher";
 import { cn } from "@/lib/utils";
 import { authClient } from "@/lib/auth";
 import type { AuthUser } from "@/lib/auth";
@@ -89,6 +90,9 @@ export function Sidebar({
 
         <div className="mt-4 px-1">
           <ThemeToggle showLabel className="w-full justify-start rounded-xl px-3 py-2.5" />
+        </div>
+        <div className="mt-2 px-1">
+          <LanguageSwitcher variant="mobile" />
         </div>
         <button
           type="button"

@@ -40,6 +40,8 @@ import {
 } from "@/lib/preferences";
 import { authClient } from "@/lib/auth";
 import { cn, formatNumber } from "@/lib/utils";
+import { useLanguage } from "@/lib/i18n/LanguageProvider";
+import type { LocaleCode } from "@/lib/i18n/languages";
 
 type Side = "rise" | "fall";
 type Panel = "trade" | "positions" | "reports" | "help" | "language";
@@ -71,6 +73,7 @@ export function OptionsTradeTerminal() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const market = getOptionsMarket(searchParams.get("id"));
+  const { locale, setLocale, code: langCode } = useLanguage();
 
   const [series, setSeries] = useState(() => seedSeries(market.price));
   const [side, setSide] = useState<Side>("rise");
@@ -85,7 +88,6 @@ export function OptionsTradeTerminal() {
   const [viewMode, setViewMode] = useState<"demo" | "real">("demo");
   const [theme, setTheme] = useState<UiTheme>("dark");
   const [panel, setPanel] = useState<Panel>("trade");
-  const [lang, setLang] = useState("EN");
   const [positions, setPositions] = useState<Position[]>([]);
   const [toast, setToast] = useState<string | null>(null);
   const [clock, setClock] = useState("");
@@ -905,26 +907,38 @@ export function OptionsTradeTerminal() {
                 {panel === "language" && (
                   <PanelBlock title="Language">
                     <div className="grid grid-cols-2 gap-2">
-                      {["EN", "KO", "AR", "UR"].map((code) => (
+                      {(
+                        [
+                          { code: "EN", locale: "en" as LocaleCode, label: "English" },
+                          { code: "KO", locale: "ko" as LocaleCode, label: "한국어" },
+                          { code: "SW", locale: "sw" as LocaleCode, label: "Kiswahili" },
+                        ] as const
+                      ).map((item) => (
                         <button
-                          key={code}
+                          key={item.code}
                           type="button"
                           onClick={() => {
-                            setLang(code);
-                            flash(`Language · ${code}`);
+                            setLocale(item.locale);
+                            flash(`Language · ${item.label}`);
                             setPanel("trade");
                           }}
                           className={cn(
                             "rounded-xl border px-3 py-3 text-sm font-semibold",
-                            lang === code
+                            locale === item.locale
                               ? "border-accent/40 bg-accent-dim text-accent"
                               : "border-border text-muted hover:bg-surface-muted",
                           )}
                         >
-                          {code}
+                          <span className="block">{item.code}</span>
+                          <span className="mt-0.5 block text-[11px] font-medium opacity-80">
+                            {item.label}
+                          </span>
                         </button>
                       ))}
                     </div>
+                    <p className="mt-3 text-xs text-subtle">
+                      Active: {langCode} · applies across the website
+                    </p>
                   </PanelBlock>
                 )}
               </AnimatePresence>

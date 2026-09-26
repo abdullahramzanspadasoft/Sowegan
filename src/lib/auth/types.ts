@@ -20,4 +20,9 @@ export type AuthResult =
 
 export type AuthProvider = {
   login: (credentials: LoginCredentials) => Promise<AuthResult>;
+  register?: (input: {
+    name: string;
+    email: string;
+    password: string;
+  }) => Promise<AuthResult>;
 };

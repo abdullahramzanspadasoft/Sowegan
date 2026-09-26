@@ -22,6 +22,20 @@ export const authClient = {
     return result;
   },
 
+  async register(
+    input: { name: string; email: string; password: string },
+    options: { remember?: boolean } = {},
+  ): Promise<AuthResult> {
+    if (!provider.register) {
+      return { ok: false, error: "Registration is not available." };
+    }
+    const result = await provider.register(input);
+    if (result.ok) {
+      writeSession(result.user, options.remember ?? true);
+    }
+    return result;
+  },
+
   logout() {
     clearSession();
   },

@@ -4,28 +4,27 @@ import Image from "next/image";
 import Link from "next/link";
 import { Plus } from "lucide-react";
 import { motion } from "motion/react";
+import { useEffect, useState } from "react";
 import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
+import { ConnectDerivModal } from "@/components/dashboard/ConnectDerivModal";
 import { formatCurrency } from "@/lib/utils";
-import { getTradingMode } from "@/lib/preferences";
-import { useEffect, useState } from "react";
+import { getDerivConnection, getTradingMode } from "@/lib/preferences";
 
-const demoAccounts = [
+const accounts = [
   {
     id: "cfd",
     title: "CFDs | Standard",
-    badge: "Demo",
     balance: 10000,
-    href: "/dashboard/markets?cat=forex",
+    href: "/dashboard/cfds",
     iconSrc: "/images/mt5-std.svg",
     iconAlt: "MT5 Standard",
   },
   {
     id: "options",
     title: "Options",
-    badge: "Demo",
     balance: 9998,
-    href: "/dashboard/markets?cat=indices",
+    href: "/dashboard/options",
     iconSrc: "/images/options-icon.svg",
     iconAlt: "Options",
   },
@@ -33,30 +32,44 @@ const demoAccounts = [
 
 export function DemoAccounts() {
   const [mode, setMode] = useState<"demo" | "real" | null>("demo");
+  const [derivId, setDerivId] = useState<string | null>(null);
+  const [derivOpen, setDerivOpen] = useState(false);
+
+  function sync() {
+    setMode(getTradingMode());
+    setDerivId(getDerivConnection()?.loginId ?? null);
+  }
 
   useEffect(() => {
-    setMode(getTradingMode());
+    sync();
   }, []);
 
   const label = mode === "real" ? "Real" : "Demo";
 
   return (
     <section>
-      <div className="mb-4 flex items-end justify-between gap-3">
+      <div className="mb-4 flex flex-wrap items-end justify-between gap-3">
         <div>
           <h2 className="text-xl font-semibold tracking-tight">
-            {mode === "real" ? "Your trading accounts" : "Try demo trading"}
+            {mode === "real" ? "Your Real trading accounts" : "Try demo trading"}
           </h2>
           <p className="mt-1 text-sm text-subtle">
             {mode === "real"
-              ? "Practice and live-ready workspaces in one desk."
+              ? derivId
+                ? `Deriv connected · ${derivId} · same desk UI as demo`
+                : "Real mode active · same charts and tools as demo"
               : "Practice with virtual funds — no real money at risk."}
           </p>
         </div>
+        {mode === "real" && (
+          <Badge tone="accent" className="bg-accent-dim text-accent">
+            Real · Deriv
+          </Badge>
+        )}
       </div>
 
       <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-        {demoAccounts.map((account, index) => (
+        {accounts.map((account, index) => (
           <motion.div
             key={account.id}
             initial={{ opacity: 0, y: 14 }}
@@ -101,7 +114,9 @@ export function DemoAccounts() {
               <p className="mt-2 font-mono-numbers text-2xl font-semibold tracking-tight transition group-hover:text-accent">
                 {formatCurrency(account.balance)}
               </p>
-              <p className="mt-1 text-xs text-subtle">USD · Ready to trade</p>
+              <p className="mt-1 text-xs text-subtle">
+                USD · {mode === "real" ? "Real desk ready" : "Ready to trade"}
+              </p>
             </Link>
           </motion.div>
         ))}
@@ -125,18 +140,33 @@ export function DemoAccounts() {
               <Plus size={20} />
             </motion.span>
             <p className="text-sm font-semibold text-text">Add more accounts</p>
-            <p className="text-xs text-subtle">Open another demo or market desk</p>
+            <p className="text-xs text-subtle">Open another market desk</p>
           </Link>
         </motion.div>
       </div>
 
-      {mode === "demo" && (
+      {mode !== "real" && (
         <div className="mt-4">
-          <Button href="/dashboard/profile" variant="ghost" className="rounded-full px-0 text-accent">
-            Switch to real trading setup →
+          <Button
+            type="button"
+            variant="ghost"
+            className="rounded-full px-0 text-accent"
+            onClick={() => setDerivOpen(true)}
+          >
+            Switch to real trading · Connect Deriv →
           </Button>
         </div>
       )}
+
+      <ConnectDerivModal
+        open={derivOpen}
+        onClose={() => setDerivOpen(false)}
+        onConnected={() => {
+          setDerivOpen(false);
+          sync();
+          window.location.assign("/dashboard");
+        }}
+      />
     </section>
   );
 }

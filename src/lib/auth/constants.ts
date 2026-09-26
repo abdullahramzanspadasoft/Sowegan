@@ -1,12 +1,10 @@
 import type { AuthUser } from "./types";
 
-export const DEMO_EMAIL = "Sowegan123@gmail.com";
-export const DEMO_PASSWORD = "Sowegan123";
-
+/** Fallback user shape for profile defaults — login accepts any email/password */
 export const DEMO_USER: AuthUser = {
-  id: "demo-user",
-  name: "Sowegan Demo",
-  email: DEMO_EMAIL,
+  id: "guest-user",
+  name: "Sowegan Trader",
+  email: "trader@sowegan.app",
 };
 
 export function normalizeEmail(email: string) {

@@ -1,15 +1,22 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Settings2, UserRound } from "lucide-react";
 import { Logo } from "@/components/ui/Logo";
 import { Button } from "@/components/ui/Button";
+import { ConnectDerivModal } from "@/components/dashboard/ConnectDerivModal";
 import { authClient } from "@/lib/auth";
-import { getTradingMode, saveTradingMode, type TradingMode } from "@/lib/preferences";
+import {
+  getDerivConnection,
+  getTradingMode,
+  saveTradingMode,
+  type TradingMode,
+} from "@/lib/preferences";
 
 export default function StartTradingPage() {
   const router = useRouter();
+  const [derivOpen, setDerivOpen] = useState(false);
 
   useEffect(() => {
     const session = authClient.getSession();
@@ -23,13 +30,17 @@ export default function StartTradingPage() {
   }, [router]);
 
   function choose(mode: TradingMode) {
-    saveTradingMode(mode);
+    if (mode === "real") {
+      setDerivOpen(true);
+      return;
+    }
+    saveTradingMode("demo");
     router.push("/dashboard");
   }
 
   return (
     <div className="relative flex min-h-screen flex-col items-center justify-center overflow-hidden page-grid px-4 py-12">
-      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(62,224,176,0.16),transparent_50%),radial-gradient(ellipse_at_bottom,rgba(10,18,36,0.9),#060b16_70%)]" />
+      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(62,224,176,0.16),transparent_50%),radial-gradient(ellipse_at_bottom,rgba(10,18,36,0.9),var(--bg)_70%)]" />
 
       <div className="relative z-10 mb-10">
         <Logo href="/" size="lg" />
@@ -38,7 +49,7 @@ export default function StartTradingPage() {
       <div className="relative z-10 w-full max-w-lg text-center">
         <div className="mx-auto mb-8 flex h-28 w-28 items-center justify-center">
           <div className="relative">
-            <span className="inline-flex h-24 w-24 items-center justify-center rounded-[2rem] border border-border bg-[linear-gradient(145deg,#1a2744,#0d1730)] shadow-[0_20px_50px_rgba(0,0,0,0.35)]">
+            <span className="inline-flex h-24 w-24 items-center justify-center rounded-[2rem] border border-border bg-surface shadow-[0_20px_50px_rgba(0,0,0,0.35)]">
               <UserRound className="text-muted" size={44} strokeWidth={1.5} />
             </span>
             <span className="absolute -bottom-1 -right-1 inline-flex h-11 w-11 items-center justify-center rounded-2xl border border-accent/30 bg-accent text-[#06231a] shadow-lg">
@@ -51,7 +62,7 @@ export default function StartTradingPage() {
           Start real trading
         </h1>
         <p className="mx-auto mt-4 max-w-md text-sm leading-7 text-muted sm:text-base">
-          Set up your profile to trade with real funds or try free demo trading.
+          Connect Deriv for Real mode — same desk UI as demo — or try free demo trading.
         </p>
 
         <div className="mt-10 flex flex-col gap-3 sm:flex-row sm:justify-center">
@@ -75,9 +86,24 @@ export default function StartTradingPage() {
         </div>
 
         <p className="mt-8 text-xs leading-5 text-subtle">
-          Frontend demo only. No real money, payments, or brokerage accounts are connected.
+          Frontend demo only. Deriv connect is simulated — no live brokerage money moves.
         </p>
       </div>
+
+      <ConnectDerivModal
+        open={derivOpen}
+        onClose={() => {
+          setDerivOpen(false);
+          // If user already connected earlier, go to dashboard
+          if (getDerivConnection()?.connected || getTradingMode() === "real") {
+            router.push("/dashboard");
+          }
+        }}
+        onConnected={() => {
+          setDerivOpen(false);
+          router.push("/dashboard");
+        }}
+      />
     </div>
   );
 }

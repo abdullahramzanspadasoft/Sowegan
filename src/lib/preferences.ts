@@ -23,9 +23,10 @@ export type TradingMode = "demo" | "real";
 const REGION_KEY = "sowegan.region";
 const TRADING_MODE_KEY = "sowegan.tradingMode";
 
-export function saveRegion(code: string) {
+export function saveRegion(code: string, name?: string) {
   if (typeof window === "undefined") return;
   window.localStorage.setItem(REGION_KEY, code);
+  if (name) window.localStorage.setItem(`${REGION_KEY}.name`, name);
 }
 
 export function getRegion(): string | null {
@@ -36,7 +37,11 @@ export function getRegion(): string | null {
 export function getRegionOption() {
   const code = getRegion();
   if (!code) return null;
-  return regions.find((item) => item.code === code) ?? null;
+  if (typeof window !== "undefined") {
+    const storedName = window.localStorage.getItem(`${REGION_KEY}.name`);
+    if (storedName) return { code, name: storedName };
+  }
+  return regions.find((item) => item.code === code) ?? { code, name: code };
 }
 
 export function getRegionLabel(): string | null {
@@ -57,6 +62,8 @@ export function getTradingMode(): TradingMode | null {
 export function clearTradingPreferences() {
   if (typeof window === "undefined") return;
   window.localStorage.removeItem(TRADING_MODE_KEY);
+  window.localStorage.removeItem(CFD_VIEW_MODE_KEY);
+  window.localStorage.removeItem(DERIV_KEY);
 }
 
 export type TradeProfile = {
@@ -126,6 +133,42 @@ export function getCfdViewMode(): TradingMode {
 export function saveCfdViewMode(mode: TradingMode) {
   if (typeof window === "undefined") return;
   window.localStorage.setItem(CFD_VIEW_MODE_KEY, mode);
+}
+
+export type DerivConnection = {
+  connected: boolean;
+  loginId: string;
+  email: string;
+  connectedAt: number;
+};
+
+const DERIV_KEY = "sowegan.derivConnection";
+
+export function getDerivConnection(): DerivConnection | null {
+  if (typeof window === "undefined") return null;
+  try {
+    const raw = window.localStorage.getItem(DERIV_KEY);
+    if (!raw) return null;
+    return JSON.parse(raw) as DerivConnection;
+  } catch {
+    return null;
+  }
+}
+
+export function saveDerivConnection(connection: DerivConnection) {
+  if (typeof window === "undefined") return;
+  window.localStorage.setItem(DERIV_KEY, JSON.stringify(connection));
+}
+
+export function clearDerivConnection() {
+  if (typeof window === "undefined") return;
+  window.localStorage.removeItem(DERIV_KEY);
+}
+
+/** Switch app into Real mode (same UI as demo) and persist CFD view */
+export function activateRealTradingMode() {
+  saveTradingMode("real");
+  saveCfdViewMode("real");
 }
 
 export type UiTheme = "dark" | "light";

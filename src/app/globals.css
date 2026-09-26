@@ -114,7 +114,8 @@ body {
     color 0.25s ease;
 }
 
-html[data-locale="ko"] body {
+html[data-locale="ko"] body,
+html[data-locale="sw"] body {
   font-family:
     "Apple SD Gothic Neo",
     "Malgun Gothic",
