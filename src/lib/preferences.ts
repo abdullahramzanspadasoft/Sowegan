@@ -64,6 +64,7 @@ export function clearTradingPreferences() {
   window.localStorage.removeItem(TRADING_MODE_KEY);
   window.localStorage.removeItem(CFD_VIEW_MODE_KEY);
   window.localStorage.removeItem(DERIV_KEY);
+  window.localStorage.removeItem("sowegan.featuredActivations");
 }
 
 export type TradeProfile = {
@@ -169,6 +170,36 @@ export function clearDerivConnection() {
 export function activateRealTradingMode() {
   saveTradingMode("real");
   saveCfdViewMode("real");
+}
+
+export type FeaturedId = "gold" | "tv";
+
+export type FeaturedActivations = {
+  gold: boolean;
+  tv: boolean;
+};
+
+const FEATURED_KEY = "sowegan.featuredActivations";
+
+export function getFeaturedActivations(): FeaturedActivations {
+  if (typeof window === "undefined") return { gold: false, tv: false };
+  try {
+    const raw = window.localStorage.getItem(FEATURED_KEY);
+    if (!raw) return { gold: false, tv: false };
+    const parsed = JSON.parse(raw) as Partial<FeaturedActivations>;
+    return {
+      gold: Boolean(parsed.gold),
+      tv: Boolean(parsed.tv),
+    };
+  } catch {
+    return { gold: false, tv: false };
+  }
+}
+
+export function saveFeaturedActivation(id: FeaturedId, active = true) {
+  if (typeof window === "undefined") return;
+  const next = { ...getFeaturedActivations(), [id]: active };
+  window.localStorage.setItem(FEATURED_KEY, JSON.stringify(next));
 }
 
 export type UiTheme = "dark" | "light";

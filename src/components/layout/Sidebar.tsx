@@ -10,12 +10,12 @@ import {
   Coins,
   Home,
   LogOut,
-  Sparkles,
   X,
 } from "lucide-react";
 import { Logo } from "@/components/ui/Logo";
 import { ThemeToggle } from "@/components/layout/ThemeToggle";
 import { LanguageSwitcher } from "@/components/layout/LanguageSwitcher";
+import { AskSoweganButton } from "@/components/dashboard/AskSoweganChat";
 import { cn } from "@/lib/utils";
 import { authClient } from "@/lib/auth";
 import type { AuthUser } from "@/lib/auth";
@@ -94,13 +94,13 @@ export function Sidebar({
         <div className="mt-2 px-1">
           <LanguageSwitcher variant="mobile" />
         </div>
-        <button
-          type="button"
-          className="mt-4 flex w-full items-center justify-center gap-2 rounded-full bg-[linear-gradient(105deg,#fbbf24_0%,#f97316_45%,#a855f7_100%)] px-4 py-2.5 text-sm font-semibold text-white shadow-[0_10px_28px_rgba(168,85,247,0.25)] transition hover:brightness-110"
-        >
-          <Sparkles size={16} />
-          Ask Sowegan
-        </button>
+        <div className="mt-4 px-1">
+          <AskSoweganButton
+            fullWidth
+            className="shadow-[0_10px_28px_rgba(168,85,247,0.25)]"
+            onClick={onClose}
+          />
+        </div>
       </nav>
 
       <div className="space-y-3 border-t border-border p-4">

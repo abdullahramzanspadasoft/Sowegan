@@ -8,12 +8,19 @@ import { DashboardShell } from "@/components/layout/DashboardShell";
 import { CompleteProfileModal } from "@/components/dashboard/cfds/CompleteProfileModal";
 import { DepositModal } from "@/components/dashboard/cfds/DepositModal";
 import { P2PBoard } from "@/components/dashboard/cfds/P2PBoard";
+import { ConnectDerivModal } from "@/components/dashboard/ConnectDerivModal";
 import { formatCurrency, cn } from "@/lib/utils";
 import {
+  activateRealTradingMode,
   getCfdViewMode,
+  getDerivConnection,
+  getFeaturedActivations,
   getTradeProfile,
   saveCfdViewMode,
+  saveFeaturedActivation,
   saveTradingMode,
+  type FeaturedActivations,
+  type FeaturedId,
   type TradingMode,
 } from "@/lib/preferences";
 import { useRouter } from "next/navigation";
@@ -27,22 +34,26 @@ const myAccounts = [
   },
 ];
 
-const featured = [
+const featuredMeta = [
   {
-    id: "gold",
+    id: "gold" as const,
     title: "Gold",
     description: "Specialised account for gold and metals.",
     cta: "Activate now",
+    doneCta: "Trade Gold",
     badge: "MT5 Gold",
     tone: "from-amber-500/25 via-transparent to-transparent",
+    href: "/dashboard/markets?cat=commodities&q=XAU",
   },
   {
-    id: "tv",
+    id: "tv" as const,
     title: "TradingView",
     description: "Access all financial and exclusive Sowegan markets.",
     cta: "Connect",
+    doneCta: "Open markets",
     badge: "TV",
     tone: "from-sky-500/20 via-transparent to-transparent",
+    href: "/dashboard/markets",
   },
 ];
 
@@ -68,11 +79,18 @@ export function CfdDesk() {
   const [depositOpen, setDepositOpen] = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
   const [p2pOpen, setP2pOpen] = useState(false);
+  const [derivOpen, setDerivOpen] = useState(false);
+  const [pendingFeatured, setPendingFeatured] = useState<FeaturedId | null>(null);
+  const [featuredState, setFeaturedState] = useState<FeaturedActivations>({
+    gold: false,
+    tv: false,
+  });
   const [refreshing, setRefreshing] = useState(false);
   const [balance] = useState(0);
 
   useEffect(() => {
     setViewMode(getCfdViewMode());
+    setFeaturedState(getFeaturedActivations());
   }, []);
 
   function switchMode(mode: TradingMode) {
@@ -94,6 +112,33 @@ export function CfdDesk() {
       return;
     }
     router.push("/dashboard/markets?cat=forex");
+  }
+
+  function completeFeatured(id: FeaturedId) {
+    saveFeaturedActivation(id, true);
+    activateRealTradingMode();
+    setViewMode("real");
+    setFeaturedState(getFeaturedActivations());
+    const meta = featuredMeta.find((item) => item.id === id);
+    router.push(meta?.href ?? "/dashboard/markets");
+  }
+
+  function onFeaturedCta(id: FeaturedId) {
+    const meta = featuredMeta.find((item) => item.id === id);
+    if (!meta) return;
+
+    if (featuredState[id] && getDerivConnection()?.connected) {
+      router.push(meta.href);
+      return;
+    }
+
+    if (getDerivConnection()?.connected) {
+      completeFeatured(id);
+      return;
+    }
+
+    setPendingFeatured(id);
+    setDerivOpen(true);
   }
 
   return (
@@ -201,33 +246,42 @@ export function CfdDesk() {
         <section>
           <h2 className="mb-4 text-lg font-semibold">Featured</h2>
           <div className="grid gap-4 lg:grid-cols-2">
-            {featured.map((item, index) => (
-              <motion.article
-                key={item.id}
-                initial={{ opacity: 0, y: 12 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.08 * index }}
-                whileHover={{ y: -4 }}
-                className={cn(
-                  "relative overflow-hidden rounded-3xl border border-border bg-surface p-5",
-                  `bg-gradient-to-br ${item.tone}`,
-                )}
-              >
-                <p className="text-lg font-semibold">{item.title}</p>
-                <p className="mt-2 max-w-sm text-sm text-muted">{item.description}</p>
-                <div className="mt-6 flex items-center justify-between gap-3">
-                  <span className="rounded-full border border-border px-3 py-1 text-xs font-semibold">
-                    {item.badge}
-                  </span>
-                  <button
-                    type="button"
-                    className="rounded-full bg-white/10 px-4 py-2 text-sm font-semibold transition hover:bg-white/15"
-                  >
-                    {item.cta}
-                  </button>
-                </div>
-              </motion.article>
-            ))}
+            {featuredMeta.map((item, index) => {
+              const active = featuredState[item.id];
+              return (
+                <motion.article
+                  key={item.id}
+                  initial={{ opacity: 0, y: 12 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.08 * index }}
+                  whileHover={{ y: -4 }}
+                  className={cn(
+                    "relative overflow-hidden rounded-3xl border border-border bg-surface p-5",
+                    `bg-gradient-to-br ${item.tone}`,
+                  )}
+                >
+                  <p className="text-lg font-semibold">{item.title}</p>
+                  <p className="mt-2 max-w-sm text-sm text-muted">{item.description}</p>
+                  <div className="mt-6 flex items-center justify-between gap-3">
+                    <span className="rounded-full border border-border px-3 py-1 text-xs font-semibold">
+                      {item.badge}
+                    </span>
+                    <button
+                      type="button"
+                      onClick={() => onFeaturedCta(item.id)}
+                      className={cn(
+                        "rounded-full px-4 py-2 text-sm font-semibold transition",
+                        active
+                          ? "bg-accent text-[#06231a] hover:bg-accent-hover"
+                          : "bg-white/10 hover:bg-white/15",
+                      )}
+                    >
+                      {active ? item.doneCta : item.cta}
+                    </button>
+                  </div>
+                </motion.article>
+              );
+            })}
           </div>
         </section>
 
@@ -289,6 +343,19 @@ export function CfdDesk() {
         onSelectP2P={() => setP2pOpen(true)}
       />
       <P2PBoard open={p2pOpen} onClose={() => setP2pOpen(false)} />
+      <ConnectDerivModal
+        open={derivOpen}
+        onClose={() => {
+          setDerivOpen(false);
+          setPendingFeatured(null);
+        }}
+        onConnected={() => {
+          const id = pendingFeatured;
+          setDerivOpen(false);
+          setPendingFeatured(null);
+          if (id) completeFeatured(id);
+        }}
+      />
     </DashboardShell>
   );
 }
