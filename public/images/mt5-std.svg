@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="120" height="120" viewBox="0 0 120 120" fill="none">
+  <defs>
+    <linearGradient id="top" x1="18" y1="14" x2="102" y2="78" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#5AAEF8"/>
+      <stop offset="0.45" stop-color="#3B8DEB"/>
+      <stop offset="1" stop-color="#2B78D8"/>
+    </linearGradient>
+    <clipPath id="card">
+      <rect x="16" y="16" width="88" height="88" rx="20"/>
+    </clipPath>
+  </defs>
+  <g filter="drop-shadow(0px 4px 8px rgb(0 0 0 / 0.3))">
+    <g clip-path="url(#card)">
+      <rect x="16" y="16" width="88" height="88" rx="20" fill="url(#top)"/>
+      <rect x="16" y="82" width="88" height="22" fill="#1B2A44"/>
+      <path d="M20 18h80" stroke="#FFFFFF" stroke-opacity="0.28" stroke-width="2" stroke-linecap="round"/>
+      <text x="60" y="62" text-anchor="middle" fill="#FFFFFF" font-family="Arial Black, Helvetica Neue, Arial, sans-serif" font-size="30" font-style="italic" font-weight="800">MT5</text>
+      <text x="60" y="98" text-anchor="middle" fill="#FFFFFF" font-family="Arial Black, Helvetica Neue, Arial, sans-serif" font-size="14" font-style="italic" font-weight="800">STD</text>
+    </g>
+  </g>
+</svg>
